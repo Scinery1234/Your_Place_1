@@ -2,6 +2,7 @@
 const express = require('express')
 
 const helmet = require('helmet')
+
 const cors = require('cors')
 
 const bookingRoutes = require ('./routes/bookings.routes') 
@@ -17,6 +18,11 @@ const corsOptions = {
 app.use(helmet())
 app.use(cors(corsOptions))
 app.use(express.json())
+
+// Mount auth routes in the app
+const authRoutes = require('./routes/auth.routes')
+
+app.use('/auth', authRoutes)
 
 // Health check / base route
 app.get('/', (req, res) => {
