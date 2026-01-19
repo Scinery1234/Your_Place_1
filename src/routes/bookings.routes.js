@@ -21,9 +21,9 @@ router.get('/event/:eventId', bookingController.getBookingsByEventId);
 router.get('/space/:spaceId', bookingController.getBookingsBySpaceId);
 
 // Update a booking
-router.get('/:id', bookingController.updateBooking)
+router.put('/:id', bookingController.updateBooking)
 
 // Delete a booking
-router.get('/:id', bookingController.deleteBooking);
+router.delete('/:id', bookingController.deleteBooking);
 
 module.exports = router;
