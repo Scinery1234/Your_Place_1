@@ -2,20 +2,23 @@ const express = require('express');
 const bookingController = require('../controllers/bookings.controller');
 const router = express.Router();
 
-// Create a new booking
+// Create a new booking (requires eventId or SpaceId)
 router.post('/', bookingController.createBooking);
 
 // Get all bookings
 router.get('/', bookingController.getAllBookings);
 
-// Get a specific booking with ID
+// Get a specific booking by its ID
 router.get('/:id', bookingController.GetBookingById);
 
-// Get all bookings for a user
+// Get all bookings for a user (both events and spaces)
 router.get('/user/:userId', bookingController.getBookingsByUserId);
 
 // Get all bookings for an event
 router.get('/event/:eventId', bookingController.getBookingsByEventId);
+
+// Get all bookings for a space
+router.get('/space/:spaceId', bookingController.getBookingsBySpaceId);
 
 // Update a booking
 router.get('/:id', bookingController.updateBooking)
