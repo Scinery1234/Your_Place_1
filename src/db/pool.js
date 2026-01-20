@@ -1,9 +1,5 @@
-const pg = require("pg");
-const dotenv = require("dotenv");
-
-dotenv.config();
-
-const { Pool } = pg;
+// src/db/pool.js
+const { Pool } = require("pg");
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -12,5 +8,4 @@ const pool = new Pool({
 const query = (text, params) => pool.query(text, params);
 const getClient = () => pool.connect();
 
-module.exports = { query, getClient };
-module.exports.default = pool;
+module.exports = { pool, query, getClient };
