@@ -1,5 +1,15 @@
 const db = require('../db/pool.js')
 
+/**
+ * Create a new booking for an event/space
+ * @param {number} eventId - ID of event being booked (null if booking space)
+ * @param {number} spaceId - ID of space being booked (null if booking event)
+ * @param {number} userId - ID of the user making the booking
+ * @param {number} quantity - Number of spots/seats being booked
+ * @param {number} totalPrice - Total price for the booking
+ * @param {string} paymentStatus - Payment status (default is 'pending')
+ * @returns {object} The created booking
+ */
 const createBooking = async (eventId, spaceId, userId, quantity, totalPrice, paymentStatus) => {
   // Validates that eventId OR spaceId is provided (cannot be both)
   if ((!eventId && !spaceId) || (eventId && spaceId)) {
@@ -15,16 +25,30 @@ const createBooking = async (eventId, spaceId, userId, quantity, totalPrice, pay
   return result.rows[0]
 }
 
+/**
+ * Get all bookings from database
+ * @returns Array of all bookings by ID
+ */
 const getAllBookings = async () => {
-    const result = await db.uery('SELECT * FROM bookings ORDER BY id')
+    const result = await db.query('SELECT * FROM bookings ORDER BY id')
     return result.rows
 }
 
+/**
+ * Get a single booking by its ID
+ * @param {number} bookingID 
+ * @returns {object} the booking object, undefined if none found
+ */
 const getBookingById = async (id) => {
     const result = await db.query('SELECT * FROM bookings WHERE id = $1', [id])
     return result.rows[0]
 }
 
+/**
+ * Get all bookings for a user with event/space details
+ * @param {number} userID
+ * @returns {array} Bookings with joined event/space details
+ */
 const getBookingsByUserId = async (userId) => {
   const result = await db.query(
     `SELECT 
@@ -45,6 +69,11 @@ const getBookingsByUserId = async (userId) => {
   return result.rows
 }
 
+/**
+ * Get all bookings for an event with user details
+ * @param {number} eventID
+ * @returns {array} Bookings for event with user details
+ */
 const getBookingsByEventId = async (eventId) => {
     const result = await db.query(
         `SELECT b.*, u.full_name, u.email
@@ -57,6 +86,11 @@ const getBookingsByEventId = async (eventId) => {
     return result.rows
 }
 
+/**
+ * Get all bookings for a space with user details
+ * @param {number} spaceID
+ * @returns {array} Bookings for space with user details
+ */
 const getBookingsBySpaceId = async (spaceId) => {
     const result = await db.query(
         `SELECT b.*, u.full_name, u.email
@@ -68,6 +102,13 @@ const getBookingsBySpaceId = async (spaceId) => {
     )
     return result.rows
 }
+
+/**
+ * Update an existing booking
+ * @param {number} bookingID
+ * @returns {number} quantity value @returns {number} new total price @returns {string} new payment status
+ * @returns {object} Updated booking, undefined if not found
+ */
 const updateBooking = async (id, quantity, totalPrice, paymentStatus) => {
     const result = await db.query(
         `UPDATE bookings
@@ -79,6 +120,11 @@ const updateBooking = async (id, quantity, totalPrice, paymentStatus) => {
     return result.rows[0]
 }
 
+/**
+ * Delete a booking from database
+ * @param {number} bookingID
+ * @returns {object} Deleted booking, undefined if not found
+ */
 const deleteBooking = async (id) => {
     const result = await db.query(
         `DELETE FROM bookings
