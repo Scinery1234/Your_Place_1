@@ -1,10 +1,6 @@
-// Entry point for the application
-// Responsible for starting the server and listening on a port
-
-require('dotenv').config()
-
-const app = require('./index')
-const pool = require('./db/pool')
+require("dotenv").config();
+const app = require("./app");
+const { query } = require("./db/pool");
 
 const PORT = process.env.PORT || 5000
 

@@ -1,9 +1,11 @@
-// Create and export a PostgreSQL connection pool
-const {Pool} = require ('pg')
+// src/db/pool.js
+const { Pool } = require("pg");
 
-// Create a new pool using DATABASE_URL from .env
-const pool = new Pool ({
-    connectionstring: process.env.DATABASE_URL,
-})
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
-module.exports = pool
+const query = (text, params) => pool.query(text, params);
+const getClient = () => pool.connect();
+
+module.exports = { pool, query, getClient };
