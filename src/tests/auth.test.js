@@ -3,7 +3,7 @@ const app = require('../app')
 const { query } = require('../db/pool')
 
 describe('Auth API', () => {
-  const email = 'auth@test.com'
+  const email = `auth+${Date.now()}@test.com`
   const password = 'password123'
 
   afterAll(async () => {

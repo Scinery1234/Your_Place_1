@@ -3,7 +3,7 @@ const app = require('../app')
 const { query } = require('../db/pool')
 
 describe('Users API', () => {
-  const email = 'me@test.com'
+  const email = `me+${Date.now()}@test.com`
   const password = 'password123'
 
   afterAll(async () => {
