@@ -3,8 +3,10 @@ const app = require('../app')
 const { query } = require('../db/pool')
 const { createToken } = require('../services/auth.service')
 
+const AUTH_USER = { id: 1, role: 'host' }
+
 const authHeader = () => ({
-  Authorization: `Bearer ${createToken({ id: 1, role: 'host' })}`,
+  Authorization: `Bearer ${createToken(AUTH_USER)}`,
 })
 
 async function seedSpace({ hostUserId = 1, name = 'Test Space', city = 'Sydney' } = {}) {
@@ -125,7 +127,7 @@ describe('Events API', () => {
     expect(after.status).toBe(404)
   })
 
-  it('POST /events returns 401 when missing auth', async () => {
+  test('POST /events returns 401 when missing auth', async () => {
     const mySpace = await seedSpace({ hostUserId: 1 })
 
     const res = await request(app).post('/events').send({
@@ -139,7 +141,9 @@ describe('Events API', () => {
       price_per_spot: 0,
       status: 'draft',
     })
+
     expect(res.status).toBe(401)
-    expect(res.body && res.body.error && res.body.error.code).toBe('UNAUTHORIZED')
+    expect(res.body?.error?.code).toBe('UNAUTHORIZED')
   })
 })
+

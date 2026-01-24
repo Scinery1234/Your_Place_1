@@ -3,8 +3,10 @@ const app = require('../app')
 const { query } = require('../db/pool')
 const { createToken } = require('../services/auth.service')
 
+const AUTH_USER = { id: 1, role: 'host' }
+
 const authHeader = () => ({
-  Authorization: `Bearer ${createToken({ id: 1, role: 'host' })}`,
+  Authorization: `Bearer ${createToken(AUTH_USER)}`,
 })
 
 async function seedSpace({ hostUserId = 1, name = 'Test Space' } = {}) {
@@ -29,7 +31,7 @@ describe('Spaces API', () => {
     })
 
     expect(res.status).toBe(201)
-    expect(res.body && res.body.data && res.body.data.id).toBeTruthy()
+    expect(res.body?.data?.id).toBeTruthy()
     expect(res.body.data.name).toBe('My Space')
     expect(res.body.data.host_user_id).toBe(1)
   })
@@ -54,7 +56,7 @@ describe('Spaces API', () => {
 
     const missing = await request(app).get('/spaces/999999')
     expect(missing.status).toBe(404)
-    expect(missing.body && missing.body.error && missing.body.error.code).toBeTruthy()
+    expect(missing.body?.error?.code).toBeTruthy()
   })
 
   test('Update (200 / 403)', async () => {
@@ -75,7 +77,7 @@ describe('Spaces API', () => {
       .send({ name: 'Hack' })
 
     expect(forbidden.status).toBe(403)
-    expect(forbidden.body && forbidden.body.error && forbidden.body.error.code).toBeTruthy()
+    expect(forbidden.body?.error?.code).toBeTruthy()
   })
 
   test('Delete (204 / 403)', async () => {
@@ -92,7 +94,7 @@ describe('Spaces API', () => {
     expect(after.status).toBe(404)
   })
 
-  it('POST /spaces returns 401 when missing auth', async () => {
+  test('POST /spaces returns 401 when missing auth', async () => {
     const res = await request(app).post('/spaces').send({
       name: 'No Auth Space',
       description: 'Test',
@@ -102,6 +104,7 @@ describe('Spaces API', () => {
       capacity: 10,
     })
     expect(res.status).toBe(401)
-    expect(res.body && res.body.error && res.body.error.code).toBe('UNAUTHORIZED')
+    expect(res.body?.error?.code).toBe('UNAUTHORIZED')
   })
 })
+

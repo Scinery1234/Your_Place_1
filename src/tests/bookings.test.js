@@ -53,7 +53,7 @@ describe('Bookings API', () => {
       .set(authHeader(tokenUser))
       .send({ eventId, quantity: 1, totalPrice: 50, paymentStatus: 'pending' })
 
-    bookingId = bookingRes.body && bookingRes.body.data && bookingRes.body.data.id
+    bookingId = bookingRes.body?.data?.id
   })
 
   it('POST /bookings creates a booking (201)', async () => {
@@ -63,7 +63,7 @@ describe('Bookings API', () => {
       .send({ eventId, quantity: 2, totalPrice: 100, paymentStatus: 'pending' })
 
     expect(res.status).toBe(201)
-    expect(res.body && res.body.data).toHaveProperty('id')
+    expect(res.body?.data).toHaveProperty('id')
     expect(res.body.data.event_id).toBe(eventId)
     expect(res.body.data.user_id).toBe(hostUserId)
   })
@@ -107,13 +107,13 @@ describe('Bookings API', () => {
   it('GET /bookings/:id returns 400 for invalid id param', async () => {
     const res = await request(app).get('/bookings/not-a-number').set(authHeader(tokenUser))
     expect(res.status).toBe(400)
-    expect(res.body && res.body.error && res.body.error.code).toBe('VALIDATION_ERROR')
+    expect(res.body?.error?.code).toBe('VALIDATION_ERROR')
   })
 
   it('POST /bookings returns 400 when missing required fields', async () => {
     const res = await request(app).post('/bookings').set(authHeader(tokenUser)).send({ eventId })
     expect(res.status).toBe(400)
-    expect(res.body && res.body.error && res.body.error.code).toBe('VALIDATION_ERROR')
+    expect(res.body?.error?.code).toBe('VALIDATION_ERROR')
   })
 
   it('POST /bookings returns 400 when both eventId and spaceId are provided', async () => {
@@ -123,7 +123,7 @@ describe('Bookings API', () => {
       .send({ eventId, spaceId, quantity: 1, totalPrice: 50 })
 
     expect(res.status).toBe(400)
-    expect(res.body && res.body.error && res.body.error.code).toBe('VALIDATION_ERROR')
+    expect(res.body?.error?.code).toBe('VALIDATION_ERROR')
   })
 
   it('GET /bookings/:id returns 403 for a different user', async () => {
@@ -138,7 +138,7 @@ describe('Bookings API', () => {
 
     const res = await request(app).get(`/bookings/${bookingId}`).set(authHeader(otherUser))
     expect(res.status).toBe(403)
-    expect(res.body && res.body.error && res.body.error.code).toBe('FORBIDDEN')
+    expect(res.body?.error?.code).toBe('FORBIDDEN')
 
     await query('DELETE FROM users WHERE id = $1', [otherUser.id])
   })
@@ -146,15 +146,13 @@ describe('Bookings API', () => {
   it('GET /bookings/:id returns 404 when booking does not exist', async () => {
     const res = await request(app).get('/bookings/999999').set(authHeader(tokenUser))
     expect(res.status).toBe(404)
-    expect(res.body && res.body.error && res.body.error.code).toBe('NOT_FOUND')
+    expect(res.body?.error?.code).toBe('NOT_FOUND')
   })
 
   it('GET /bookings?scope=host returns bookings for hosted events/spaces (host only)', async () => {
     const hostUser = { id: 1, role: 'host' }
 
-    const res = await request(app)
-      .get('/bookings?scope=host')
-      .set(authHeader(hostUser))
+    const res = await request(app).get('/bookings?scope=host').set(authHeader(hostUser))
 
     expect(res.status).toBe(200)
     expect(Array.isArray(res.body.data)).toBe(true)
@@ -170,12 +168,10 @@ describe('Bookings API', () => {
     )
     const user = { id: userRes.rows[0].id, role: 'user' }
 
-    const res = await request(app)
-      .get('/bookings?scope=host')
-      .set(authHeader(user))
+    const res = await request(app).get('/bookings?scope=host').set(authHeader(user))
 
     expect(res.status).toBe(403)
-    expect(res.body && res.body.error && res.body.error.code).toBe('FORBIDDEN')
+    expect(res.body?.error?.code).toBe('FORBIDDEN')
 
     await query('DELETE FROM users WHERE id = $1', [user.id])
   })
@@ -195,7 +191,7 @@ describe('Bookings API', () => {
       .set(authHeader(normalUser))
       .send({ eventId, quantity: 1, totalPrice: 50 })
 
-    const otherBookingId = createRes.body && createRes.body.data && createRes.body.data.id
+    const otherBookingId = createRes.body?.data?.id
 
     const hostUser = { id: 1, role: 'host' }
     const badUpdate = await request(app)
@@ -204,7 +200,7 @@ describe('Bookings API', () => {
       .send({ quantity: 5 })
 
     expect(badUpdate.status).toBe(403)
-    expect(badUpdate.body && badUpdate.body.error && badUpdate.body.error.code).toBe('FORBIDDEN')
+    expect(badUpdate.body?.error?.code).toBe('FORBIDDEN')
 
     const okUpdate = await request(app)
       .patch(`/bookings/${otherBookingId}`)

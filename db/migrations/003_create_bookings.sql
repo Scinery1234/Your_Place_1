@@ -8,7 +8,11 @@ CREATE TABLE IF NOT EXISTS bookings (
   payment_status VARCHAR(50) NOT NULL DEFAULT 'pending',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CHECK ((event_id IS NOT NULL AND space_id IS NULL) OR (event_id IS NULL AND space_id IS NOT NULL))
+  CHECK (
+    (event_id IS NOT NULL AND space_id IS NULL)
+    OR
+    (event_id IS NULL AND space_id IS NOT NULL)
+  )
 );
 
 CREATE INDEX IF NOT EXISTS idx_bookings_user_id ON bookings(user_id);

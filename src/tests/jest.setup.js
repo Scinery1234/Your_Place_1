@@ -17,13 +17,8 @@ const RESET_SQL = path.join(__dirname, '../../db/reset.sql')
 
 async function runSqlFile(filePath) {
   const sql = fs.readFileSync(filePath, 'utf8')
-  const statements = sql
-    .split(';')
-    .map((s) => s.trim())
-    .filter(Boolean)
-  for (const st of statements) {
-    await query(`${st};`)
-  }
+  // node-postgres can run multiple statements when no params are provided
+  await query(sql)
 }
 
 async function resetAndMigrate() {
@@ -34,6 +29,7 @@ async function resetAndMigrate() {
     .filter((f) => f.endsWith('.sql'))
     .sort()
 
+  // Apply in order: 000..., 001..., etc
   // eslint-disable-next-line no-restricted-syntax
   for (const file of files) {
     // eslint-disable-next-line no-await-in-loop
@@ -42,6 +38,7 @@ async function resetAndMigrate() {
 }
 
 async function ensureHostUsers() {
+  // id=1 and id=2 as "hosts" for ownership tests
   await query(
     `INSERT INTO users (id, full_name, email, password_hash, role, locale)
      VALUES
@@ -55,6 +52,7 @@ async function ensureHostUsers() {
     []
   )
 
+  // Ensure the SERIAL sequence is ahead of our fixed ids (1,2)
   await query(
     `SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT COALESCE(MAX(id), 1) FROM users))`,
     []
@@ -67,9 +65,12 @@ beforeAll(async () => {
 })
 
 beforeEach(async () => {
+  // Clean tables between tests. Order matters because of foreign keys.
   await query('DELETE FROM bookings', [])
   await query('DELETE FROM events', [])
   await query('DELETE FROM spaces', [])
+
+  // Keep users, but re-ensure roles/emails
   await ensureHostUsers()
 })
 
