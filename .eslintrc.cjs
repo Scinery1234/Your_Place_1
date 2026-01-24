@@ -12,7 +12,7 @@ module.exports = {
     'no-console': 'off',
     'class-methods-use-this': 'off',
     'import/prefer-default-export': 'off',
-    'camelcase': 'off',
+    camelcase: 'off',
     'no-plusplus': 'off',
     'no-restricted-syntax': ['error', 'ForInStatement', 'LabeledStatement', 'WithStatement'],
     'no-await-in-loop': 'off',

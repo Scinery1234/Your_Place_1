@@ -73,18 +73,20 @@ async function getBookingById(user, bookingId) {
 async function updateBooking(user, bookingId, payload) {
   const existing = await getBookingById(user, bookingId)
 
+  let updatePayload = payload
+
   if (user.role === 'host' && existing.user_id !== user.id) {
     const allowed = {}
-    if (payload.paymentStatus) allowed.paymentStatus = payload.paymentStatus
+    if (updatePayload.paymentStatus) allowed.paymentStatus = updatePayload.paymentStatus
     if (Object.keys(allowed).length === 0) {
       throw new ApiError(403, 'FORBIDDEN', 'Hosts can only update paymentStatus')
     }
-    payload = allowed
+    updatePayload = allowed
   }
 
-  const quantity = payload.quantity ?? existing.quantity
-  const totalPrice = payload.totalPrice ?? Number(existing.total_price)
-  const paymentStatus = payload.paymentStatus ?? existing.payment_status
+  const quantity = updatePayload.quantity ?? existing.quantity
+  const totalPrice = updatePayload.totalPrice ?? Number(existing.total_price)
+  const paymentStatus = updatePayload.paymentStatus ?? existing.payment_status
 
   const updated = await model.updateBooking(bookingId, quantity, totalPrice, paymentStatus)
   return updated

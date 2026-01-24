@@ -24,6 +24,7 @@ This project uses PostgreSQL with separate **development** and **test** database
 ---
 
 ### Prerequisites
+
 - PostgreSQL installed + running
 - `psql` available in your terminal
 - Node.js installed
@@ -45,17 +46,17 @@ This project uses PostgreSQL with separate **development** and **test** database
 Now edit both files and replace `<username>` / `<password>`.
 
 **.env**
-    PORT=3000
-    NODE_ENV=development
-    DATABASE_URL=postgres://<username>:<password>@localhost:5432/your_place_dev
-    JWT_SECRET=replace_me_with_a_random_string
-    JWT_EXPIRES_IN=1d
+PORT=3000
+NODE_ENV=development
+DATABASE_URL=postgres://<username>:<password>@localhost:5432/your_place_dev
+JWT_SECRET=replace_me_with_a_random_string
+JWT_EXPIRES_IN=1d
 
 **.env.test**
-    NODE_ENV=test
-    DATABASE_URL_TEST=postgres://<username>:<password>@localhost:5432/your_place_test
-    JWT_SECRET=replace_me_with_a_random_string
-    JWT_EXPIRES_IN=1d
+NODE_ENV=test
+DATABASE_URL_TEST=postgres://<username>:<password>@localhost:5432/your_place_test
+JWT_SECRET=replace_me_with_a_random_string
+JWT_EXPIRES_IN=1d
 
 ---
 
@@ -98,6 +99,7 @@ Now edit both files and replace `<username>` / `<password>`.
 ---
 
 ### Notes
+
 - Do NOT commit `.env` or `.env.test` (they are gitignored)
 - Migrations must be run in order (000 → 003)
 
@@ -114,15 +116,15 @@ Now edit both files and replace `<username>` / `<password>`.
 
 ## Key Dependencies and Why
 
-| Package | Purpose |
-|--------|---------|
-| **express** | HTTP server and routing |
-| **pg** | PostgreSQL driver for Node.js |
-| **zod** | Request validation and schema parsing |
+| Package          | Purpose                                |
+| ---------------- | -------------------------------------- |
+| **express**      | HTTP server and routing                |
+| **pg**           | PostgreSQL driver for Node.js          |
+| **zod**          | Request validation and schema parsing  |
 | **jsonwebtoken** | JWT creation and verification for auth |
-| **bcryptjs** | Password hashing |
-| **helmet** | Security headers |
-| **cors** | Cross-origin resource sharing |
+| **bcryptjs**     | Password hashing                       |
+| **helmet**       | Security headers                       |
+| **cors**         | Cross-origin resource sharing          |
 
 ---
 
@@ -138,8 +140,8 @@ Now edit both files and replace `<username>` / `<password>`.
 
 Major dependencies use permissive licenses:
 
-- **express**, **pg**, **zod**, **jsonwebtoken**, **bcryptjs**, **helmet**, **cors**: MIT  
-- **dotenv**: BSD-2-Clause  
+- **express**, **pg**, **zod**, **jsonwebtoken**, **bcryptjs**, **helmet**, **cors**: MIT
+- **dotenv**: BSD-2-Clause
 
 See each package’s `license` field in `node_modules` or [npm](https://www.npmjs.com/) for details.
 
@@ -148,6 +150,7 @@ See each package’s `license` field in `node_modules` or [npm](https://www.npmj
 ## Security Model
 
 ### Authentication
+
 - **JWT-based authentication** using `Authorization: Bearer <token>` headers
 - Tokens are signed with `JWT_SECRET` and include user `id` and `role`
 - All protected endpoints require valid JWT tokens (401 if missing/invalid)
@@ -155,12 +158,14 @@ See each package’s `license` field in `node_modules` or [npm](https://www.npmj
 ### Authorization Rules
 
 **Spaces & Events:**
+
 - Create/Update/Delete: Requires `host` role
 - Read: Public (no auth required)
 
 **Bookings:**
+
 - **Create:** Any authenticated user can create bookings for themselves (uses `req.user.id`)
-- **Read:** 
+- **Read:**
   - Users can view their own bookings (`scope=mine` or default)
   - Hosts can view bookings for their hosted events/spaces (`scope=host`)
 - **Update:**
