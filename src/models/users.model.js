@@ -20,7 +20,10 @@ async function findUserByEmail(email) {
  * @returns {Object|null}
  */
 async function findUserById(id) {
-  const { rows } = await query('SELECT id, full_name, email, role, locale FROM users WHERE id = $1', [id])
+  const { rows } = await query(
+    'SELECT id, full_name, email, role, locale FROM users WHERE id = $1',
+    [id]
+  )
 
   return rows[0] || null
 }
@@ -92,10 +95,28 @@ async function deleteUserById(id) {
   return rows[0] || null
 }
 
+/**
+ * Update a user's role (admin-only route uses this).
+ * @param {number} id
+ * @param {string} role
+ * @returns {Object|null} Updated user row or null if not found.
+ */
+async function updateUserRoleById(id, role) {
+  const { rows } = await query(
+    `UPDATE users
+     SET role = $1, updated_at = NOW()
+     WHERE id = $2
+     RETURNING id, full_name, email, role, locale`,
+    [role, id]
+  )
+  return rows[0] || null
+}
+
 module.exports = {
   findUserByEmail,
   findUserById,
   createUser,
   updateUserById,
   deleteUserById,
+  updateUserRoleById,
 }

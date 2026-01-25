@@ -37,13 +37,14 @@ async function resetAndMigrate() {
   }
 }
 
-async function ensureHostUsers() {
-  // id=1 and id=2 as "hosts" for ownership tests
+async function ensureSeedUsers() {
+  // id=1 and id=2 as "hosts" for ownership tests, plus an admin for role-management tests
   await query(
     `INSERT INTO users (id, full_name, email, password_hash, role, locale)
      VALUES
        (1, 'Test Host 1', 'host1@test.com', 'dummy_hash', 'host', 'en'),
-       (2, 'Test Host 2', 'host2@test.com', 'dummy_hash', 'host', 'en')
+       (2, 'Test Host 2', 'host2@test.com', 'dummy_hash', 'host', 'en'),
+       (3, 'Test Admin', 'admin@test.com', 'dummy_hash', 'admin', 'en')
      ON CONFLICT (id) DO UPDATE
        SET full_name = EXCLUDED.full_name,
            email = EXCLUDED.email,
@@ -52,7 +53,7 @@ async function ensureHostUsers() {
     []
   )
 
-  // Ensure the SERIAL sequence is ahead of our fixed ids (1,2)
+  // Ensure the SERIAL sequence is ahead of our fixed ids (1,2,3)
   await query(
     `SELECT setval(pg_get_serial_sequence('users', 'id'), (SELECT COALESCE(MAX(id), 1) FROM users))`,
     []
@@ -61,7 +62,7 @@ async function ensureHostUsers() {
 
 beforeAll(async () => {
   await resetAndMigrate()
-  await ensureHostUsers()
+  await ensureSeedUsers()
 })
 
 beforeEach(async () => {
@@ -71,7 +72,7 @@ beforeEach(async () => {
   await query('DELETE FROM spaces', [])
 
   // Keep users, but re-ensure roles/emails
-  await ensureHostUsers()
+  await ensureSeedUsers()
 })
 
 afterAll(async () => {
