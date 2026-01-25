@@ -20,7 +20,8 @@
     "test": "NODE_ENV=test jest",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "seed:dev": "NODE_ENV=development node db/scripts/seed-dev-users.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
