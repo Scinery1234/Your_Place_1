@@ -226,9 +226,24 @@ Role-based access control (RBAC) is enforced across the application to ensure us
 
 **Admin Role**
 
-- Admin users have unrestricted access to all resources on the application
-- Admins can update another user's role
-- Admin-only functionality, such as role updates (e.g. user to host) are protected and enforced by JWT authentication, role-based middleware checks, and Zod request validation
+- Administrative role only
+- Can update another user’s role via:
+  - `PATCH /users/:id/role`
+- Intended strictly for role management (e.g. promoting a user to host)
+- They do not manage content directly
+
+
+> Admin users do **not** automatically have permission to manage spaces, events, or bookings unless they also hold the relevant role.
+
+**User Roles & Promotion**
+
+All newly registered users are created with the `user` role by default.
+
+A user can only become a `host` if an administrator explicitly updates their role using the admin-only endpoint:
+
+PATCH /users/:id/role
+
+This ensures that only approved users can create and manage spaces and events.
 
 ---
 
@@ -329,19 +344,41 @@ JWT_EXPIRES_IN=1d
 
 ---
 
-### 5) Install deps
+### 5) Development User Seeding
+
+For local development and manual API testing, a dev-only seed script is provided to create an admin and a host user.
+
+Run:
+
+    npm run seed:dev
+
+This will create (or update) the following users:
+
+- Admin  
+  Email: admin@yourplace.dev  
+  Password: password123  
+
+- Host  
+  Email: host@yourplace.dev  
+  Password: password123  
+
+⚠️ This script is protected against running in production.
+
+---
+
+### 6) Install deps
 
     npm install
 
 ---
 
-### 6) Run server
+### 7) Run server
 
     npm run dev
 
 ---
 
-### 7) Run tests
+### 8) Run tests
 
     npm test
 
